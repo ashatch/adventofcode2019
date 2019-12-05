@@ -24,7 +24,7 @@ type intersection struct {
 }
 
 func main() {
-	file, err := os.Open("steps.txt")
+	file, err := os.Open("input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,7 +43,8 @@ func main() {
 
 	for _, i := range intersections {
 		dist := wirelib.DistanceToIntersection(i)
-		fmt.Println(dist)
+		steps := wirelib.StepsToIntersection(i)
+		fmt.Println("distance: ", dist, " steps: ", steps)
 	}
 
 	if err := scanner.Err(); err != nil {

@@ -8,13 +8,14 @@ type Pos struct {
 
 // WireStep is a placement of wire on the grid
 type WireStep struct {
-	from       Pos
-	to         Pos
-	length     int
-	startSteps int
-	endSteps   int
-	index      int
-	horizontal bool
+	From       Pos
+	To         Pos
+	Length     int
+	StartSteps int
+	EndSteps   int
+	Index      int
+	Horizontal bool
+	Direction  int
 }
 
 // WireRoute is contiguous sequence of WireStep
@@ -28,4 +29,6 @@ type Intersection struct {
 	Vertical   WireStep
 	X          int
 	Y          int
+	StepsX     int
+	StepsY     int
 }

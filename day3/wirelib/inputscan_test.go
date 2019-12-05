@@ -23,22 +23,22 @@ func TestLength(t *testing.T) {
 
 func TestStepsAndLength(t *testing.T) {
 	route := Parse("L10,U100")
-	if route.route[0].startSteps != 0 {
+	if route.route[0].StartSteps != 0 {
 		t.Fail()
 	}
-	if route.route[0].endSteps != 10 {
+	if route.route[0].EndSteps != 10 {
 		t.Fail()
 	}
-	if route.route[0].length != 10 {
+	if route.route[0].Length != 10 {
 		t.Fail()
 	}
-	if route.route[1].startSteps != 10 {
+	if route.route[1].StartSteps != 10 {
 		t.Fail()
 	}
-	if route.route[1].endSteps != 110 {
+	if route.route[1].EndSteps != 110 {
 		t.Fail()
 	}
-	if route.route[1].length != 100 {
+	if route.route[1].Length != 100 {
 		t.Fail()
 	}
 }
@@ -46,11 +46,11 @@ func TestStepsAndLength(t *testing.T) {
 func TestPositions(t *testing.T) {
 	route := Parse("R10,U10,L5,D1")
 
-	if route.route[3].to.x != 5 {
+	if route.route[3].To.x != 5 {
 		t.Fail()
 	}
 
-	if route.route[3].to.y != 9 {
+	if route.route[3].To.y != 9 {
 		t.Fail()
 	}
 }
@@ -59,7 +59,7 @@ func TestIndices(t *testing.T) {
 	route := Parse("L10,U100,D10,U5")
 
 	for i := 0; i < 4; i++ {
-		if route.route[i].index != i {
+		if route.route[i].Index != i {
 			t.Fail()
 		}
 	}
@@ -68,19 +68,19 @@ func TestIndices(t *testing.T) {
 func TestHorizontalVertical(t *testing.T) {
 	route := Parse("L10,U100,R10,D5")
 
-	if !route.route[0].horizontal {
+	if !route.route[0].Horizontal {
 		t.Fail()
 	}
 
-	if route.route[1].horizontal {
+	if route.route[1].Horizontal {
 		t.Fail()
 	}
 
-	if !route.route[2].horizontal {
+	if !route.route[2].Horizontal {
 		t.Fail()
 	}
 
-	if route.route[3].horizontal {
+	if route.route[3].Horizontal {
 		t.Fail()
 	}
 }
