@@ -28,16 +28,7 @@ func maxOf(vars ...int) int {
 	return max
 }
 
-type intersectionTestResult struct {
-	horizontal WireStep
-	vertical   WireStep
-	x          int
-	y          int
-	insetX     int
-	insetY     int
-}
-
-func doesIntersect(first WireStep, second WireStep) (result *intersectionTestResult, err error) {
+func doesIntersect(first WireStep, second WireStep) (result *Intersection, err error) {
 	if first.Horizontal == second.Horizontal {
 		return nil, err
 	}
@@ -68,13 +59,13 @@ func doesIntersect(first WireStep, second WireStep) (result *intersectionTestRes
 		return nil, err
 	}
 
-	result = &intersectionTestResult{
-		horizontal: horizontal,
-		vertical:   vertical,
-		x:          vertical.From.x,
-		y:          horizontal.From.y,
-		insetX:     insetX,
-		insetY:     insetY,
+	result = &Intersection{
+		Horizontal: horizontal,
+		Vertical:   vertical,
+		X:          vertical.From.x,
+		Y:          horizontal.From.y,
+		StepsX:     insetX,
+		StepsY:     insetY,
 	}
 	return result, nil
 }
@@ -89,15 +80,7 @@ func FindIntersections(firstWire WireRoute, secondWire WireRoute) []Intersection
 		for _, step2 := range secondWire.route {
 			testResult, _ := doesIntersect(step1, step2)
 			if testResult != nil {
-				i := Intersection{
-					Horizontal: testResult.horizontal,
-					Vertical:   testResult.vertical,
-					X:          testResult.x,
-					Y:          testResult.y,
-					StepsX:     testResult.insetX,
-					StepsY:     testResult.insetY,
-				}
-				intersections = append(intersections, i)
+				intersections = append(intersections, *testResult)
 			}
 		}
 	}
@@ -112,6 +95,9 @@ func DistanceToIntersection(i Intersection) int64 {
 	return int64(math.Abs(float64(i.X)) + math.Abs(float64(i.Y)))
 }
 
+/*
+StepsToIntersection from origin by tracing both wires
+*/
 func StepsToIntersection(i Intersection) int {
 	return i.Horizontal.StartSteps + i.StepsX + i.Vertical.StartSteps + i.StepsY
 }
