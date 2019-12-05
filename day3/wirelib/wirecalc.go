@@ -61,19 +61,8 @@ func doesIntersect(first WireStep, second WireStep) (result *intersectionTestRes
 
 	intersects := hLeft < vertical.From.x && vertical.From.x < hRight && vBottom < horizontal.From.y && horizontal.From.y < vTop
 
-	var insetX int
-	var insetY int
-	if horizontal.Direction > 0 {
-		insetX = vertical.From.x - horizontal.From.x
-	} else {
-		insetX = -1 * (vertical.From.x - horizontal.From.x)
-	}
-
-	if vertical.Direction > 0 {
-		insetY = horizontal.From.y - vertical.From.y
-	} else {
-		insetY = -1 * (horizontal.From.y - vertical.From.y)
-	}
+	insetX := int(math.Abs(float64(vertical.From.x - horizontal.From.x)))
+	insetY := int(math.Abs(float64(horizontal.From.y - vertical.From.y)))
 
 	if !intersects {
 		return nil, err
