@@ -49,11 +49,11 @@ func TestCheckPassword(t *testing.T) {
 		t.Fail()
 	}
 
-	// if !CheckPassword(PasswordToDigitSequence(111122)) {
-	// 	t.Fail()
-	// }
+	if !CheckPassword(PasswordToDigitSequence(111122)) {
+		t.Fail()
+	}
 
-	// if CheckPassword(PasswordToDigitSequence(123444)) {
-	// 	t.Fail()
-	// }
+	if CheckPassword(PasswordToDigitSequence(123444)) {
+		t.Fail()
+	}
 }

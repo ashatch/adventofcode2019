@@ -33,16 +33,40 @@ func HasTwoAdjacentDigits(sequence []int) bool {
 
 func HasTwoAdjacentDigitsInLargerGroup(sequence []int) bool {
 	sequenceLength := len(sequence)
-	if sequenceLength < 2 {
-		return false
+
+	adjFreqCount := [10]int{}
+
+	for n := 0; n < 10; n++ {
+		count := 0
+		latch := true
+		for i := 0; i < sequenceLength; i++ {
+			if sequence[i] == n {
+				if latch {
+					count++
+				}
+			} else {
+				if count > 0 {
+					latch = false
+				}
+			}
+		}
+
+		adjFreqCount[n] = count
 	}
 
-	for i := 0; i < sequenceLength-2; i++ {
-		if sequence[i] == sequence[i+1] && sequence[i] == sequence[i+2] {
-			return true
+	var hasTwo bool
+	var hasLarger bool
+
+	for _, i := range adjFreqCount {
+		if i == 2 {
+			hasTwo = true
+		}
+		if i > 2 {
+			hasLarger = true
 		}
 	}
-	return false
+
+	return hasLarger && !hasTwo
 }
 
 func DigitsOnlyIncrease(sequence []int) bool {
