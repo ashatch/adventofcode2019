@@ -24,3 +24,15 @@ func TestPuterWithGivenExamples(t *testing.T) {
 		}
 	}
 }
+
+func TestInputOpcode(t *testing.T) {
+	inputData := []string{
+		"42",
+	}
+
+	input := NewSuppliedInput(inputData)
+	programArray := MyPuter(input, "3,3,99,0")
+	if programArray[3] != 42 {
+		t.Fail()
+	}
+}
