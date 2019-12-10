@@ -12,6 +12,10 @@ const (
 	MultiplyInstruction = 2
 	InputInstruction    = 3
 	PrintInstruction    = 4
+	JumpIfTrue          = 5
+	JumpIfFalse         = 6
+	LessThan            = 7
+	Equals              = 8
 	HaltInstruction     = 99
 )
 
@@ -20,9 +24,6 @@ func operand(programArray []int, programCounter int, operandNumber int) int {
 
 	thousands := int(math.Floor(float64(instruction / 1000 % 1000)))
 	hundreds := int(math.Floor(float64((instruction - thousands*1000) / 100 % 100)))
-
-	// fmt.Println("    (operand pc:", programCounter, "t", thousands, "h", hundreds, "on:", operandNumber, ")")
-	// fmt.Println("         value: ", programArray[programCounter+operandNumber+1])
 
 	immediateMode := ((operandNumber == 0) && (hundreds == 1)) || ((operandNumber == 1) && (thousands == 1))
 
@@ -61,8 +62,6 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 		hundreds := int(math.Floor(float64((baseInstruction - thousands*1000) / 100 % 100)))
 		instruction := baseInstruction - (thousands * 1000) - (hundreds * 100)
 
-		// fmt.Println("base", baseInstruction, "instruction: ", instruction)
-
 		switch instruction {
 		case AddInstruction:
 			{
@@ -70,7 +69,6 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 				rhs := operand(programArray, i, 1)
 				value := lhs + rhs
 				resultIndex := programArray[i+3]
-				// fmt.Println("+", lhs, rhs, "=", value, "=>", resultIndex)
 				programArray[resultIndex] = value
 				i += 3
 			}
@@ -80,7 +78,6 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 				rhs := operand(programArray, i, 1)
 				value := lhs * rhs
 				resultIndex := programArray[i+3]
-				// fmt.Println("*", lhs, rhs, "=", value, "=>", resultIndex)
 				programArray[resultIndex] = value
 				i += 3
 			}
@@ -104,6 +101,51 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 		case HaltInstruction:
 			{
 				return programArray
+			}
+		case JumpIfTrue:
+			{
+				conditional := operand(programArray, i, 0)
+				location := operand(programArray, i, 1)
+				if conditional != 0 {
+					i = location - 1 // -1 as we increment in the loop
+				} else {
+					i += 2
+				}
+			}
+		case JumpIfFalse:
+			{
+				conditional := operand(programArray, i, 0)
+				location := operand(programArray, i, 1)
+				if conditional == 0 {
+					i = location - 1 // -1 as we increment in the loop
+				} else {
+					i += 2
+				}
+			}
+		case LessThan:
+			{
+				a := operand(programArray, i, 0)
+				b := operand(programArray, i, 1)
+				location := programArray[i+3]
+
+				if a < b {
+					programArray[location] = 1
+				} else {
+					programArray[location] = 0
+				}
+				i += 3
+			}
+		case Equals:
+			{
+				a := operand(programArray, i, 0)
+				b := operand(programArray, i, 1)
+				location := programArray[i+3]
+				if a == b {
+					programArray[location] = 1
+				} else {
+					programArray[location] = 0
+				}
+				i += 3
 			}
 		default:
 			{
