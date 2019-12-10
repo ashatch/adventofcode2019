@@ -2,14 +2,39 @@ package puter
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 )
 
-/*
-does the thing
-*/
-func MyPuter(inputStrategy InputStrategy, program string) []int {
+const (
+	AddInstruction      = 1
+	MultiplyInstruction = 2
+	InputInstruction    = 3
+	PrintInstruction    = 4
+	HaltInstruction     = 99
+)
+
+func operand(programArray []int, programCounter int, operandNumber int) int {
+	instruction := programArray[programCounter]
+
+	thousands := int(math.Floor(float64(instruction / 1000 % 1000)))
+	hundreds := int(math.Floor(float64((instruction - thousands*1000) / 100 % 100)))
+
+	// fmt.Println("    (operand pc:", programCounter, "t", thousands, "h", hundreds, "on:", operandNumber, ")")
+	// fmt.Println("         value: ", programArray[programCounter+operandNumber+1])
+
+	immediateMode := ((operandNumber == 0) && (hundreds == 1)) || ((operandNumber == 1) && (thousands == 1))
+
+	if immediateMode {
+		return programArray[programCounter+operandNumber+1]
+	}
+
+	offset := programArray[programCounter+operandNumber+1]
+	return programArray[offset]
+}
+
+func parseProgram(program string) []int {
 	programArrayStrings := strings.Split(program, ",")
 	var programArray = []int{}
 
@@ -21,36 +46,71 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 		programArray = append(programArray, j)
 	}
 
+	return programArray
+}
+
+/*
+does the thing
+*/
+func MyPuter(inputStrategy InputStrategy, program string) []int {
+	var programArray = parseProgram(program)
+
 	for i := 0; i < len(programArray); i++ {
-		token := programArray[i]
+		baseInstruction := programArray[i]
+		thousands := int(math.Floor(float64(baseInstruction / 1000 % 1000)))
+		hundreds := int(math.Floor(float64((baseInstruction - thousands*1000) / 100 % 100)))
+		instruction := baseInstruction - (thousands * 1000) - (hundreds * 100)
 
-		if token == 1 {
-			programArray[programArray[i+3]] = programArray[programArray[i+1]] + programArray[programArray[i+2]]
-			i += 3
-		} else if token == 2 {
-			programArray[programArray[i+3]] = programArray[programArray[i+1]] * programArray[programArray[i+2]]
-			i += 3
-		} else if token == 3 {
-			input, err := strconv.Atoi(inputStrategy.GetInput())
-			if err == nil {
-				argument := programArray[i+1]
-				programArray[argument] = input
-			} else {
-				fmt.Println("fault - supplied non-integer data")
+		// fmt.Println("base", baseInstruction, "instruction: ", instruction)
+
+		switch instruction {
+		case AddInstruction:
+			{
+				lhs := operand(programArray, i, 0)
+				rhs := operand(programArray, i, 1)
+				value := lhs + rhs
+				resultIndex := programArray[i+3]
+				// fmt.Println("+", lhs, rhs, "=", value, "=>", resultIndex)
+				programArray[resultIndex] = value
+				i += 3
 			}
-
-			i++
-		} else if token == 4 {
-			argument := programArray[i+1]
-			fmt.Println(programArray[argument])
-			i++
-		} else if token == 99 {
-			return programArray
-		} else {
-			fmt.Println("fault")
-			return programArray
+		case MultiplyInstruction:
+			{
+				lhs := operand(programArray, i, 0)
+				rhs := operand(programArray, i, 1)
+				value := lhs * rhs
+				resultIndex := programArray[i+3]
+				// fmt.Println("*", lhs, rhs, "=", value, "=>", resultIndex)
+				programArray[resultIndex] = value
+				i += 3
+			}
+		case InputInstruction:
+			{
+				input, err := strconv.Atoi(inputStrategy.GetInput())
+				if err == nil {
+					argument := programArray[i+1]
+					programArray[argument] = input
+				} else {
+					fmt.Println("fault - supplied non-integer data")
+				}
+				i++
+			}
+		case PrintInstruction:
+			{
+				operand := operand(programArray, i, 0)
+				fmt.Println(operand)
+				i++
+			}
+		case HaltInstruction:
+			{
+				return programArray
+			}
+		default:
+			{
+				fmt.Println("fault", instruction)
+				return programArray
+			}
 		}
 	}
 	return programArray
-
 }

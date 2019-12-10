@@ -36,3 +36,25 @@ func TestInputOpcode(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestParameterMode(t *testing.T) {
+	programArray := MyPuter(nil, "1002,4,3,4,33")
+	if programArray[4] != 99 {
+		t.Fail()
+	}
+}
+
+func TestParameterModeNegative(t *testing.T) {
+	programArray := MyPuter(nil, "1101,100,-1,4,0")
+	if programArray[4] != 99 {
+		t.Fail()
+	}
+}
+
+func TestParameterModePrint(t *testing.T) {
+	MyPuter(nil, "4,2,4,3,99")
+}
+
+func TestParameterModePrintImmediate(t *testing.T) {
+	MyPuter(nil, "104,2,4,3,99")
+}
