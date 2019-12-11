@@ -21,3 +21,8 @@ type OrbitalSystem struct {
 	root   *Body
 	bodies map[string]*Body
 }
+
+type OrbitStats struct {
+	DirectOrbitCount   int
+	IndirectOrbitCount int
+}

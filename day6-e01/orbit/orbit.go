@@ -1,8 +1,6 @@
 package orbit
 
-import "fmt"
-
-func newSystem(rootLabel string) *OrbitalSystem {
+func NewSystem(rootLabel string) *OrbitalSystem {
 	rootBody := newBody(rootLabel)
 
 	system := &OrbitalSystem{
@@ -17,7 +15,7 @@ func newSystem(rootLabel string) *OrbitalSystem {
 
 func newBody(label string) *Body {
 	body := &Body{
-		Label:      "COM",
+		Label:      label,
 		Orbiting:   nil,
 		Satellites: []*Body{},
 	}
@@ -29,18 +27,24 @@ func addSatellite(body *Body, satellite *Body) {
 	satellite.Orbiting = body
 }
 
+func breadthFirst(body *Body, depth int, stats *OrbitStats) {
+	for _, b := range body.Satellites {
+		stats.DirectOrbitCount++
+		stats.IndirectOrbitCount += depth
+		breadthFirst(b, depth+1, stats)
+	}
+}
+
 /*
 Count does things
 */
-func Count() {
-	fmt.Println("test")
-	com := newBody("COM")
+func Count(system *OrbitalSystem) *OrbitStats {
+	stats := &OrbitStats{
+		DirectOrbitCount:   0,
+		IndirectOrbitCount: 0,
+	}
 
-	planetB := newBody("planet-B")
+	breadthFirst(system.root, 0, stats)
 
-	addSatellite(com, newBody("planet-A"))
-	addSatellite(com, planetB)
-	addSatellite(planetB, newBody("moon-1"))
-
-	fmt.Println(com)
+	return stats
 }

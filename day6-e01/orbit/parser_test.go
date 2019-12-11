@@ -14,7 +14,7 @@ func TestParseDeclaration(t *testing.T) {
 }
 
 func TestAddingToSystem(t *testing.T) {
-	system := newSystem("COM")
+	system := NewSystem("COM")
 	planetA := ParseDeclaration("COM)A")
 	planetB := ParseDeclaration("COM)B")
 

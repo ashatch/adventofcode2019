@@ -21,7 +21,7 @@ func AddDeclaration(declaration *Declaration, system *OrbitalSystem) {
 	}
 
 	if system.bodies[declaration.satellite] == nil {
-		system.bodies[declaration.satellite] = newBody(declaration.body)
+		system.bodies[declaration.satellite] = newBody(declaration.satellite)
 	}
 
 	body := system.bodies[declaration.body]
