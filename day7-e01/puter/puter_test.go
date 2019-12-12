@@ -111,15 +111,3 @@ func TestBigTestyTesty(t *testing.T) {
 
 	assert.Equal(t, 1001, output.Output[0])
 }
-
-func TestPhaseSequenceExample(t *testing.T) {
-	program := "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0"
-
-	ampInputA := []int{
-		4,
-		0,
-	}
-
-	ampOutputA := NewStoredOutput()
-	MyPuter(NewSuppliedInput(ampInputA), ampOutputA, program)
-}

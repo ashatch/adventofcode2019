@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 
@@ -17,7 +18,8 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
+	program := scanner.Text()
 
-	stdinInput := puter.NewStdinInput()
-	puter.MyPuter(stdinInput, scanner.Text())
+	out := puter.FindMaxAmpSequence(program)
+	fmt.Println(out)
 }
