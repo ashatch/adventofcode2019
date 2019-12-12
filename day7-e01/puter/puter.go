@@ -11,7 +11,7 @@ const (
 	AddInstruction      = 1
 	MultiplyInstruction = 2
 	InputInstruction    = 3
-	PrintInstruction    = 4
+	OutputInstruction   = 4
 	JumpIfTrue          = 5
 	JumpIfFalse         = 6
 	LessThan            = 7
@@ -51,9 +51,9 @@ func parseProgram(program string) []int {
 }
 
 /*
-does the thing
+MyPuter does the thing
 */
-func MyPuter(inputStrategy InputStrategy, program string) []int {
+func MyPuter(inputStrategy InputStrategy, outputStrategy OutputStrategy, program string) []int {
 	var programArray = parseProgram(program)
 
 	for i := 0; i < len(programArray); i++ {
@@ -92,10 +92,10 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 				}
 				i++
 			}
-		case PrintInstruction:
+		case OutputInstruction:
 			{
-				operand := operand(programArray, i, 0)
-				fmt.Println(operand)
+				operand := operand(programArray, i, 0)				
+				outputStrategy.SendOutput(operand)
 				i++
 			}
 		case HaltInstruction:
