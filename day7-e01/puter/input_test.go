@@ -3,10 +3,10 @@ package puter
 import "testing"
 
 func TestInputStrategy(t *testing.T) {
-	arr := []string{
-		"a",
-		"b",
-		"c",
+	arr := []int{
+		1,
+		2,
+		3,
 	}
 
 	input := NewSuppliedInput(arr)

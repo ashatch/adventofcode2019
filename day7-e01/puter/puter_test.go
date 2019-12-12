@@ -28,8 +28,8 @@ func TestPuterWithGivenExamples(t *testing.T) {
 }
 
 func TestInputOpcode(t *testing.T) {
-	inputData := []string{
-		"42",
+	inputData := []int{
+		42,
 	}
 
 	input := NewSuppliedInput(inputData)
@@ -64,8 +64,8 @@ func TestParameterModePrintImmediate(t *testing.T) {
 }
 
 func TestEqual(t *testing.T) {
-	inputData := []string{
-		"42",
+	inputData := []int{
+		42,
 	}
 
 	input := NewSuppliedInput(inputData)
@@ -77,8 +77,8 @@ func TestEqual(t *testing.T) {
 }
 
 func TestLessThan(t *testing.T) {
-	inputData := []string{
-		"42",
+	inputData := []int{
+		42,
 	}
 
 	input := NewSuppliedInput(inputData)
@@ -89,8 +89,8 @@ func TestLessThan(t *testing.T) {
 	assert.Equal(t, 0, output.Output[0])
 }
 func TestInputPosition(t *testing.T) {
-	inputData := []string{
-		"40",
+	inputData := []int{
+		40,
 	}
 
 	input := NewSuppliedInput(inputData)
@@ -101,8 +101,8 @@ func TestInputPosition(t *testing.T) {
 }
 
 func TestBigTestyTesty(t *testing.T) {
-	inputData := []string{
-		"110",
+	inputData := []int{
+		110,
 	}
 
 	input := NewSuppliedInput(inputData)
@@ -110,4 +110,16 @@ func TestBigTestyTesty(t *testing.T) {
 	MyPuter(input, output, "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99")
 
 	assert.Equal(t, 1001, output.Output[0])
+}
+
+func TestPhaseSequenceExample(t *testing.T) {
+	program := "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0"
+
+	ampInputA := []int{
+		4,
+		0,
+	}
+
+	ampOutputA := NewStoredOutput()
+	MyPuter(NewSuppliedInput(ampInputA), ampOutputA, program)
 }

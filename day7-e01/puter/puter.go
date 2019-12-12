@@ -83,18 +83,14 @@ func MyPuter(inputStrategy InputStrategy, outputStrategy OutputStrategy, program
 			}
 		case InputInstruction:
 			{
-				input, err := strconv.Atoi(inputStrategy.GetInput())
-				if err == nil {
-					argument := programArray[i+1]
-					programArray[argument] = input
-				} else {
-					fmt.Println("fault - supplied non-integer data")
-				}
+				input := inputStrategy.GetInput()
+				argument := programArray[i+1]
+				programArray[argument] = input
 				i++
 			}
 		case OutputInstruction:
 			{
-				operand := operand(programArray, i, 0)				
+				operand := operand(programArray, i, 0)
 				outputStrategy.SendOutput(operand)
 				i++
 			}

@@ -4,13 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 /*
 InputStrategy is how to get user input
 */
 type InputStrategy interface {
-	GetInput() string
+	GetInput() int
 }
 
 // stdin
@@ -24,11 +25,12 @@ type StdinInputStrategy struct {
 /*
 GetInput for StdinInputStrategy
 */
-func (s *StdinInputStrategy) GetInput() string {
+func (s *StdinInputStrategy) GetInput() int {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("input> ")
 	scanner.Scan()
-	return scanner.Text()
+	value, _ := strconv.Atoi(scanner.Text())
+	return value
 }
 
 /*
@@ -44,14 +46,14 @@ func NewStdinInput() InputStrategy {
 PreSuppliedInputStrategy encapsulates input
 */
 type PreSuppliedInputStrategy struct {
-	input []string
+	input []int
 	index int
 }
 
 /*
 GetInput for pre supplied
 */
-func (s *PreSuppliedInputStrategy) GetInput() string {
+func (s *PreSuppliedInputStrategy) GetInput() int {
 	input := s.input[s.index]
 	s.index++
 	return input
@@ -60,7 +62,7 @@ func (s *PreSuppliedInputStrategy) GetInput() string {
 /*
 NewSuppliedInput creates a supplied input
 */
-func NewSuppliedInput(input []string) InputStrategy {
+func NewSuppliedInput(input []int) InputStrategy {
 	return &PreSuppliedInputStrategy{
 		input: input,
 		index: 0,
