@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	count := plib.CheckPasswordRange(231832, 767346)
+	count := plib.CheckPasswordRange(146810, 612564)
 	fmt.Println(count)
 }
