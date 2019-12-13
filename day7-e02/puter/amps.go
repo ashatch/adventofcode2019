@@ -91,14 +91,14 @@ func AmpSequence(program string, input []int) int {
 	return ampOutputE.Output[0]
 }
 
-func ChanAmpSequence(program string, input []int) int {
+func AmpLoopSequence(program string, input []int) int {
 
-	c := make(chan int)
-	ampInputA := NewChannelInput(c)
-	ampOutputA := NewChannelOutput(c)
+	ampInputA := []int{
+		input[0],
+		0,
+	}
 
-	MyPuter(NewSuppliedInput(ampInputA), ampOutputA, program)
-
+	ampOutputA := NewStoredOutput()
 	ampOutputB := NewStoredOutput()
 	ampOutputC := NewStoredOutput()
 	ampOutputD := NewStoredOutput()

@@ -23,7 +23,7 @@ func main() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		lineInteger, _ := strconv.ParseInt(line, 10, 32)
+		lineInteger, _ := strconv.Atoi(line)
 		totalFuel += lib.FuelForModule(lineInteger)
 	}
 
