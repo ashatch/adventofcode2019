@@ -52,9 +52,6 @@ func doesIntersect(first WireStep, second WireStep) (result *Intersection, err e
 
 	intersects := hLeft < vertical.From.x && vertical.From.x < hRight && vBottom < horizontal.From.y && horizontal.From.y < vTop
 
-	insetX := int(math.Abs(float64(vertical.From.x - horizontal.From.x)))
-	insetY := int(math.Abs(float64(horizontal.From.y - vertical.From.y)))
-
 	if !intersects {
 		return nil, err
 	}
@@ -64,8 +61,6 @@ func doesIntersect(first WireStep, second WireStep) (result *Intersection, err e
 		Vertical:   vertical,
 		X:          vertical.From.x,
 		Y:          horizontal.From.y,
-		StepsX:     insetX,
-		StepsY:     insetY,
 	}
 	return result, nil
 }
@@ -91,13 +86,22 @@ func FindIntersections(firstWire WireRoute, secondWire WireRoute) []Intersection
 /*
 DistanceToIntersection from origin
 */
-func DistanceToIntersection(i Intersection) int64 {
-	return int64(math.Abs(float64(i.X)) + math.Abs(float64(i.Y)))
+func DistanceToIntersection(i Intersection) int {
+	return int(math.Abs(float64(i.X)) + math.Abs(float64(i.Y)))
 }
 
-/*
-StepsToIntersection from origin by tracing both wires
-*/
-func StepsToIntersection(i Intersection) int {
-	return i.Horizontal.StartSteps + i.StepsX + i.Vertical.StartSteps + i.StepsY
+func MinDistance(route1 WireRoute, route2 WireRoute) int {
+	intersections := FindIntersections(route1, route2)
+
+	var minDist int = DistanceToIntersection(intersections[0])
+
+	for _, i := range intersections {
+		dist := DistanceToIntersection(i)
+		if dist < minDist {
+			minDist = dist
+		}
+
+	}
+
+	return minDist
 }

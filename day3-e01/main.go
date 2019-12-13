@@ -39,15 +39,7 @@ func main() {
 	route1 := wirelib.Parse(wire1)
 	route2 := wirelib.Parse(wire2)
 
-	intersections := wirelib.FindIntersections(route1, route2)
+	steps := wirelib.MinDistance(route1, route2)
 
-	for _, i := range intersections {
-		dist := wirelib.DistanceToIntersection(i)
-		steps := wirelib.StepsToIntersection(i)
-		fmt.Println("distance: ", dist, " steps: ", steps)
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println("steps: ", steps)
 }
