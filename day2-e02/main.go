@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
+	file, _ := os.Open("input.txt")
+	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 	programString := scanner.Text()
 	for noun := 0; noun < 100; noun++ {
