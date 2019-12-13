@@ -68,3 +68,28 @@ func NewSuppliedInput(input []int) InputStrategy {
 		index: 0,
 	}
 }
+
+// channel
+
+/*
+ChannelInputStrategy encapsulates input
+*/
+type ChannelInputStrategy struct {
+	Input chan int
+}
+
+/*
+GetInput for ChannelInputStrategy
+*/
+func (s *ChannelInputStrategy) GetInput() int {
+	return <-s.Input
+}
+
+/*
+NewChannelInput creates channel based input
+*/
+func NewChannelInput(c chan int) *ChannelInputStrategy {
+	return &ChannelInputStrategy{
+		Input: c,
+	}
+}

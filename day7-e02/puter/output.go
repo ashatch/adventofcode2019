@@ -57,3 +57,28 @@ func NewStoredOutput() *StoredOutputStrategy {
 		Output: []int{},
 	}
 }
+
+// channel output
+
+/*
+ChannelOutputStrategy for recording output
+*/
+type ChannelOutputStrategy struct {
+	Output chan int
+}
+
+/*
+SendOutput for stored output strategy
+*/
+func (s *ChannelOutputStrategy) SendOutput(value int) {
+	s.Output <- value
+}
+
+/*
+NewChannelOutput creates a storing output
+*/
+func NewChannelOutput(c chan int) *ChannelOutputStrategy {
+	return &ChannelOutputStrategy{
+		Output: c,
+	}
+}

@@ -90,3 +90,42 @@ func AmpSequence(program string, input []int) int {
 
 	return ampOutputE.Output[0]
 }
+
+func ChanAmpSequence(program string, input []int) int {
+
+	c := make(chan int)
+	ampInputA := NewChannelInput(c)
+	ampOutputA := NewChannelOutput(c)
+
+	MyPuter(NewSuppliedInput(ampInputA), ampOutputA, program)
+
+	ampOutputB := NewStoredOutput()
+	ampOutputC := NewStoredOutput()
+	ampOutputD := NewStoredOutput()
+	ampOutputE := NewStoredOutput()
+
+	// A
+	MyPuter(NewSuppliedInput(ampInputA), ampOutputA, program)
+
+	// B
+	ampBData := []int{input[1], ampOutputA.Output[0]}
+	inputAmpB := NewSuppliedInput(ampBData)
+	MyPuter(inputAmpB, ampOutputB, program)
+
+	// C
+	ampCData := []int{input[2], ampOutputB.Output[0]}
+	inputAmpC := NewSuppliedInput(ampCData)
+	MyPuter(inputAmpC, ampOutputC, program)
+
+	// D
+	ampDData := []int{input[3], ampOutputC.Output[0]}
+	inputAmpD := NewSuppliedInput(ampDData)
+	MyPuter(inputAmpD, ampOutputD, program)
+
+	// E
+	ampEData := []int{input[4], ampOutputD.Output[0]}
+	inputAmpE := NewSuppliedInput(ampEData)
+	MyPuter(inputAmpE, ampOutputE, program)
+
+	return ampOutputE.Output[0]
+}
