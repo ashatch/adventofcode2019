@@ -1,6 +1,9 @@
 package puter
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 func generatePermutations(data []int) <-chan []int {
 	c := make(chan []int)
@@ -57,32 +60,39 @@ func FindMaxAmpSequence(program string) int {
 }
 
 func AmpSequence(program string, input []int) {
-	ampOutputA := NewChannelOutput(make(chan int))
-	ampOutputB := NewChannelOutput(make(chan int))
-	ampOutputC := NewChannelOutput(make(chan int))
-	ampOutputD := NewChannelOutput(make(chan int))
-	ampOutputE := NewPrintingChannelOutput(make(chan int))
+	var wg sync.WaitGroup
 
-	inputAmpA := NewChannelInput(ampOutputE.Output)
-	inputAmpB := NewChannelInput(ampOutputA.Output)
-	inputAmpC := NewChannelInput(ampOutputB.Output)
-	inputAmpD := NewChannelInput(ampOutputC.Output)
-	inputAmpE := NewChannelInput(ampOutputD.Output)
+	inputAmpA := NewChannelInput(make(chan int))
+	inputAmpB := NewChannelInput(make(chan int))
+	inputAmpC := NewChannelInput(make(chan int))
+	inputAmpD := NewChannelInput(make(chan int))
+	inputAmpE := NewChannelInput(make(chan int))
+
+	ampOutputA := NewChannelOutput(inputAmpB)
+	ampOutputB := NewChannelOutput(inputAmpC)
+	ampOutputC := NewChannelOutput(inputAmpD)
+	ampOutputD := NewChannelOutput(inputAmpE)
+	ampOutputE := NewChannelOutput(inputAmpA)
 
 	// A
-	go MyPuter("A", inputAmpA, ampOutputA, program)
+	wg.Add(1)
+	go MyPuter(&wg, "A", inputAmpA, ampOutputA, program)
 
 	// B
-	go MyPuter("B", inputAmpB, ampOutputB, program)
+	wg.Add(1)
+	go MyPuter(&wg, "B", inputAmpB, ampOutputB, program)
 
 	// C
-	go MyPuter("C", inputAmpC, ampOutputC, program)
+	wg.Add(1)
+	go MyPuter(&wg, "C", inputAmpC, ampOutputC, program)
 
 	// D
-	go MyPuter("D", inputAmpD, ampOutputD, program)
+	wg.Add(1)
+	go MyPuter(&wg, "D", inputAmpD, ampOutputD, program)
 
 	// E
-	go MyPuter("E", inputAmpE, ampOutputE, program)
+	wg.Add(1)
+	go MyPuter(&wg, "E", inputAmpE, ampOutputE, program)
 
 	inputAmpA.Input <- 9
 	inputAmpB.Input <- 8
@@ -91,4 +101,8 @@ func AmpSequence(program string, input []int) {
 	inputAmpE.Input <- 5
 
 	inputAmpA.Input <- 0
+
+	wg.Wait()
+
+	// fmt.Println("****** E's output", ampOutputE.Record)
 }

@@ -5,6 +5,7 @@ import (
 	"math"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 const (
@@ -53,7 +54,8 @@ func parseProgram(program string) []int {
 /*
 MyPuter does the thing
 */
-func MyPuter(name string, inputStrategy InputStrategy, outputStrategy OutputStrategy, program string) []int {
+func MyPuter(wg *sync.WaitGroup, name string, inputStrategy InputStrategy, outputStrategy OutputStrategy, program string) []int {
+	defer wg.Done()
 	var programArray = parseProgram(program)
 
 	for i := 0; i < len(programArray); i++ {
@@ -94,13 +96,10 @@ func MyPuter(name string, inputStrategy InputStrategy, outputStrategy OutputStra
 		case OutputInstruction:
 			{
 				operand := operand(programArray, i, 0)
-				fmt.Println(name, "sent> ", operand)
+				fmt.Println(name, "sending> ", operand)
 				outputStrategy.SendOutput(operand)
+				fmt.Println(name, "sent.")
 				i++
-			}
-		case HaltInstruction:
-			{
-				return programArray
 			}
 		case JumpIfTrue:
 			{
@@ -146,6 +145,12 @@ func MyPuter(name string, inputStrategy InputStrategy, outputStrategy OutputStra
 					programArray[location] = 0
 				}
 				i += 3
+			}
+		case HaltInstruction:
+			{
+				fmt.Println(name, "halting. Closing output")
+				inputStrategy.Close()
+				return programArray
 			}
 		default:
 			{

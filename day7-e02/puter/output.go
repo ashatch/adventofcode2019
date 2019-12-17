@@ -64,48 +64,23 @@ func NewStoredOutput() *StoredOutputStrategy {
 ChannelOutputStrategy for recording output
 */
 type ChannelOutputStrategy struct {
-	Output chan int
+	Input *ChannelInputStrategy
 }
 
 /*
 SendOutput for stored output strategy
 */
 func (s *ChannelOutputStrategy) SendOutput(value int) {
-	s.Output <- value
+	if !s.Input.Closed {
+		s.Input.Input <- value
+	}
 }
 
 /*
 NewChannelOutput creates a storing output
 */
-func NewChannelOutput(c chan int) *ChannelOutputStrategy {
+func NewChannelOutput(in *ChannelInputStrategy) *ChannelOutputStrategy {
 	return &ChannelOutputStrategy{
-		Output: c,
-	}
-}
-
-// printing channel output
-
-/*
-PrintingChannelOutputStrategy for recording output
-*/
-type PrintingChannelOutputStrategy struct {
-	Output chan int
-}
-
-/*
-PrintingChannelOutputStrategy for stored output strategy
-*/
-func (s *PrintingChannelOutputStrategy) SendOutput(value int) {
-	fmt.Println("chan sending output", value)
-	s.Output <- value
-	fmt.Println("chan output sent")
-}
-
-/*
-NewPrintingChannelOutput creates a printing channel output
-*/
-func NewPrintingChannelOutput(c chan int) *PrintingChannelOutputStrategy {
-	return &PrintingChannelOutputStrategy{
-		Output: c,
+		Input: in,
 	}
 }

@@ -12,6 +12,7 @@ InputStrategy is how to get user input
 */
 type InputStrategy interface {
 	GetInput() int
+	Close()
 }
 
 // stdin
@@ -31,6 +32,9 @@ func (s *StdinInputStrategy) GetInput() int {
 	scanner.Scan()
 	value, _ := strconv.Atoi(scanner.Text())
 	return value
+}
+
+func (s *StdinInputStrategy) Close() {
 }
 
 /*
@@ -59,6 +63,9 @@ func (s *PreSuppliedInputStrategy) GetInput() int {
 	return input
 }
 
+func (s *PreSuppliedInputStrategy) Close() {
+}
+
 /*
 NewSuppliedInput creates a supplied input
 */
@@ -75,7 +82,9 @@ func NewSuppliedInput(input []int) InputStrategy {
 ChannelInputStrategy encapsulates input
 */
 type ChannelInputStrategy struct {
-	Input chan int
+	Input  chan int
+	Closed bool
+	Output *ChannelOutputStrategy
 }
 
 /*
@@ -86,11 +95,17 @@ func (s *ChannelInputStrategy) GetInput() int {
 	return input
 }
 
+func (s *ChannelInputStrategy) Close() {
+	s.Closed = true
+	close(s.Input)
+}
+
 /*
 NewChannelInput creates channel based input
 */
 func NewChannelInput(c chan int) *ChannelInputStrategy {
 	return &ChannelInputStrategy{
-		Input: c,
+		Input:  c,
+		Closed: false,
 	}
 }
