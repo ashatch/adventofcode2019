@@ -64,13 +64,15 @@ func NewStoredOutput() *StoredOutputStrategy {
 ChannelOutputStrategy for recording output
 */
 type ChannelOutputStrategy struct {
-	Input *ChannelInputStrategy
+	Input     *ChannelInputStrategy
+	LastValue int
 }
 
 /*
 SendOutput for stored output strategy
 */
 func (s *ChannelOutputStrategy) SendOutput(value int) {
+	s.LastValue = value
 	if !s.Input.Closed {
 		s.Input.Input <- value
 	}
@@ -81,6 +83,7 @@ NewChannelOutput creates a storing output
 */
 func NewChannelOutput(in *ChannelInputStrategy) *ChannelOutputStrategy {
 	return &ChannelOutputStrategy{
-		Input: in,
+		Input:     in,
+		LastValue: 0,
 	}
 }

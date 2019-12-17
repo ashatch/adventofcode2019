@@ -42,24 +42,22 @@ func permutate(c chan []int, inputs []int) {
 }
 
 func FindMaxAmpSequence(program string) int {
-	fmt.Println(program)
-	return 0
-	// var maxOutput int
-	// inputValues := []int{0, 1, 2, 3, 4}
+	var maxOutput int
+	inputValues := []int{5, 6, 7, 8, 9}
 
-	// permutations := generatePermutations(inputValues)
+	permutations := generatePermutations(inputValues)
 
-	// for input := range permutations {
-	// 	output := AmpSequence(program, input)
-	// 	if output > maxOutput {
-	// 		maxOutput = output
-	// 	}
-	// }
+	for input := range permutations {
+		output := AmpSequence(program, input)
+		if output > maxOutput {
+			maxOutput = output
+		}
+	}
 
-	// return maxOutput
+	return maxOutput
 }
 
-func AmpSequence(program string, input []int) {
+func AmpSequence(program string, input []int) int {
 	var wg sync.WaitGroup
 
 	inputAmpA := NewChannelInput(make(chan int))
@@ -94,15 +92,16 @@ func AmpSequence(program string, input []int) {
 	wg.Add(1)
 	go MyPuter(&wg, "E", inputAmpE, ampOutputE, program)
 
-	inputAmpA.Input <- 9
-	inputAmpB.Input <- 8
-	inputAmpC.Input <- 7
-	inputAmpD.Input <- 6
-	inputAmpE.Input <- 5
+	inputAmpA.Input <- input[0]
+	inputAmpB.Input <- input[1]
+	inputAmpC.Input <- input[2]
+	inputAmpD.Input <- input[3]
+	inputAmpE.Input <- input[4]
 
 	inputAmpA.Input <- 0
 
 	wg.Wait()
 
-	// fmt.Println("****** E's output", ampOutputE.Record)
+	fmt.Println("Thruster output:", ampOutputE.LastValue)
+	return ampOutputE.LastValue
 }

@@ -63,7 +63,6 @@ func MyPuter(wg *sync.WaitGroup, name string, inputStrategy InputStrategy, outpu
 		thousands := int(math.Floor(float64(baseInstruction / 1000 % 1000)))
 		hundreds := int(math.Floor(float64((baseInstruction - thousands*1000) / 100 % 100)))
 		instruction := baseInstruction - (thousands * 1000) - (hundreds * 100)
-		fmt.Println(name, "executing instruction", instruction)
 
 		switch instruction {
 		case AddInstruction:
