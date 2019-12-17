@@ -1,5 +1,7 @@
 package puter
 
+import "fmt"
+
 func generatePermutations(data []int) <-chan []int {
 	c := make(chan []int)
 	go func(c chan []int) {
@@ -37,95 +39,56 @@ func permutate(c chan []int, inputs []int) {
 }
 
 func FindMaxAmpSequence(program string) int {
-	var maxOutput int
-	inputValues := []int{0, 1, 2, 3, 4}
+	fmt.Println(program)
+	return 0
+	// var maxOutput int
+	// inputValues := []int{0, 1, 2, 3, 4}
 
-	permutations := generatePermutations(inputValues)
+	// permutations := generatePermutations(inputValues)
 
-	for input := range permutations {
-		output := AmpSequence(program, input)
-		if output > maxOutput {
-			maxOutput = output
-		}
-	}
+	// for input := range permutations {
+	// 	output := AmpSequence(program, input)
+	// 	if output > maxOutput {
+	// 		maxOutput = output
+	// 	}
+	// }
 
-	return maxOutput
+	// return maxOutput
 }
 
-func AmpSequence(program string, input []int) int {
+func AmpSequence(program string, input []int) {
+	ampOutputA := NewChannelOutput(make(chan int))
+	ampOutputB := NewChannelOutput(make(chan int))
+	ampOutputC := NewChannelOutput(make(chan int))
+	ampOutputD := NewChannelOutput(make(chan int))
+	ampOutputE := NewPrintingChannelOutput(make(chan int))
 
-	ampInputA := []int{
-		input[0],
-		0,
-	}
-
-	ampOutputA := NewStoredOutput()
-	ampOutputB := NewStoredOutput()
-	ampOutputC := NewStoredOutput()
-	ampOutputD := NewStoredOutput()
-	ampOutputE := NewStoredOutput()
-
-	// A
-	MyPuter(NewSuppliedInput(ampInputA), ampOutputA, program)
-
-	// B
-	ampBData := []int{input[1], ampOutputA.Output[0]}
-	inputAmpB := NewSuppliedInput(ampBData)
-	MyPuter(inputAmpB, ampOutputB, program)
-
-	// C
-	ampCData := []int{input[2], ampOutputB.Output[0]}
-	inputAmpC := NewSuppliedInput(ampCData)
-	MyPuter(inputAmpC, ampOutputC, program)
-
-	// D
-	ampDData := []int{input[3], ampOutputC.Output[0]}
-	inputAmpD := NewSuppliedInput(ampDData)
-	MyPuter(inputAmpD, ampOutputD, program)
-
-	// E
-	ampEData := []int{input[4], ampOutputD.Output[0]}
-	inputAmpE := NewSuppliedInput(ampEData)
-	MyPuter(inputAmpE, ampOutputE, program)
-
-	return ampOutputE.Output[0]
-}
-
-func AmpLoopSequence(program string, input []int) int {
-
-	ampInputA := []int{
-		input[0],
-		0,
-	}
-
-	ampOutputA := NewStoredOutput()
-	ampOutputB := NewStoredOutput()
-	ampOutputC := NewStoredOutput()
-	ampOutputD := NewStoredOutput()
-	ampOutputE := NewStoredOutput()
+	inputAmpA := NewChannelInput(ampOutputE.Output)
+	inputAmpB := NewChannelInput(ampOutputA.Output)
+	inputAmpC := NewChannelInput(ampOutputB.Output)
+	inputAmpD := NewChannelInput(ampOutputC.Output)
+	inputAmpE := NewChannelInput(ampOutputD.Output)
 
 	// A
-	MyPuter(NewSuppliedInput(ampInputA), ampOutputA, program)
+	go MyPuter("A", inputAmpA, ampOutputA, program)
 
 	// B
-	ampBData := []int{input[1], ampOutputA.Output[0]}
-	inputAmpB := NewSuppliedInput(ampBData)
-	MyPuter(inputAmpB, ampOutputB, program)
+	go MyPuter("B", inputAmpB, ampOutputB, program)
 
 	// C
-	ampCData := []int{input[2], ampOutputB.Output[0]}
-	inputAmpC := NewSuppliedInput(ampCData)
-	MyPuter(inputAmpC, ampOutputC, program)
+	go MyPuter("C", inputAmpC, ampOutputC, program)
 
 	// D
-	ampDData := []int{input[3], ampOutputC.Output[0]}
-	inputAmpD := NewSuppliedInput(ampDData)
-	MyPuter(inputAmpD, ampOutputD, program)
+	go MyPuter("D", inputAmpD, ampOutputD, program)
 
 	// E
-	ampEData := []int{input[4], ampOutputD.Output[0]}
-	inputAmpE := NewSuppliedInput(ampEData)
-	MyPuter(inputAmpE, ampOutputE, program)
+	go MyPuter("E", inputAmpE, ampOutputE, program)
 
-	return ampOutputE.Output[0]
+	inputAmpA.Input <- 9
+	inputAmpB.Input <- 8
+	inputAmpC.Input <- 7
+	inputAmpD.Input <- 6
+	inputAmpE.Input <- 5
+
+	inputAmpA.Input <- 0
 }

@@ -82,7 +82,8 @@ type ChannelInputStrategy struct {
 GetInput for ChannelInputStrategy
 */
 func (s *ChannelInputStrategy) GetInput() int {
-	return <-s.Input
+	input := <-s.Input
+	return input
 }
 
 /*

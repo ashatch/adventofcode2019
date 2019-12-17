@@ -53,7 +53,7 @@ func parseProgram(program string) []int {
 /*
 MyPuter does the thing
 */
-func MyPuter(inputStrategy InputStrategy, outputStrategy OutputStrategy, program string) []int {
+func MyPuter(name string, inputStrategy InputStrategy, outputStrategy OutputStrategy, program string) []int {
 	var programArray = parseProgram(program)
 
 	for i := 0; i < len(programArray); i++ {
@@ -61,6 +61,7 @@ func MyPuter(inputStrategy InputStrategy, outputStrategy OutputStrategy, program
 		thousands := int(math.Floor(float64(baseInstruction / 1000 % 1000)))
 		hundreds := int(math.Floor(float64((baseInstruction - thousands*1000) / 100 % 100)))
 		instruction := baseInstruction - (thousands * 1000) - (hundreds * 100)
+		fmt.Println(name, "executing instruction", instruction)
 
 		switch instruction {
 		case AddInstruction:
@@ -83,7 +84,9 @@ func MyPuter(inputStrategy InputStrategy, outputStrategy OutputStrategy, program
 			}
 		case InputInstruction:
 			{
+				fmt.Println(name, "waiting for input...")
 				input := inputStrategy.GetInput()
+				fmt.Println(name, "received> ", input)
 				argument := programArray[i+1]
 				programArray[argument] = input
 				i++
@@ -91,6 +94,7 @@ func MyPuter(inputStrategy InputStrategy, outputStrategy OutputStrategy, program
 		case OutputInstruction:
 			{
 				operand := operand(programArray, i, 0)
+				fmt.Println(name, "sent> ", operand)
 				outputStrategy.SendOutput(operand)
 				i++
 			}

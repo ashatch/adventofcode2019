@@ -82,3 +82,30 @@ func NewChannelOutput(c chan int) *ChannelOutputStrategy {
 		Output: c,
 	}
 }
+
+// printing channel output
+
+/*
+PrintingChannelOutputStrategy for recording output
+*/
+type PrintingChannelOutputStrategy struct {
+	Output chan int
+}
+
+/*
+PrintingChannelOutputStrategy for stored output strategy
+*/
+func (s *PrintingChannelOutputStrategy) SendOutput(value int) {
+	fmt.Println("chan sending output", value)
+	s.Output <- value
+	fmt.Println("chan output sent")
+}
+
+/*
+NewPrintingChannelOutput creates a printing channel output
+*/
+func NewPrintingChannelOutput(c chan int) *PrintingChannelOutputStrategy {
+	return &PrintingChannelOutputStrategy{
+		Output: c,
+	}
+}
