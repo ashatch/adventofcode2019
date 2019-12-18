@@ -25,5 +25,5 @@ func main() {
 		Height:     6,
 	}
 
-	peexl.DecodeImageString(imageDefinition)
+	peexl.RenderImage(imageDefinition)
 }

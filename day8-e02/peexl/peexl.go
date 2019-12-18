@@ -11,14 +11,88 @@ type ImageDefinition struct {
 	Height     int
 }
 
+type ImageLayersInfo struct {
+	PixelCount      int
+	LayerPixelCount int
+	LayerCount      int
+}
+
 type LayerInfo struct {
 	LayerIndex int
 	ZeroCount  int
 }
 
-func FreqCountValueAtLayer(imageDefinition *ImageDefinition, layerIndex int, layerPixelCount int, valueToFind int) int {
+const (
+	Black       = 0
+	White       = 1
+	Transparent = 2
+)
+
+func Offset(image *ImageDefinition, layer int, x int, y int) int {
+	layerInfo := ExtractImageLayerInfo(image)
+	return (layerInfo.LayerPixelCount * layer) + (y * image.Width) + x
+}
+
+func PixelValue(image *ImageDefinition, offset int) int {
+	pixelChar := string(image.StringData[offset])
+	pixelValue, _ := strconv.Atoi(pixelChar)
+	return pixelValue
+}
+
+func RenderImage(image *ImageDefinition) {
+	for y := 0; y < image.Height; y++ {
+		for x := 0; x < image.Width; x++ {
+			value := RenderPixel(image, x, y)
+			if value == Black {
+				fmt.Print(" ")
+			} else {
+				fmt.Print("X")
+			}
+		}
+		fmt.Println()
+	}
+}
+
+func RenderPixel(image *ImageDefinition, x int, y int) int {
+	layerInfo := ExtractImageLayerInfo(image)
+
+	for layer := 0; layer < layerInfo.LayerCount; layer++ {
+		offset := Offset(image, layer, x, y)
+		pixel := PixelValue(image, offset)
+		switch pixel {
+		case White:
+			{
+				return White
+			}
+		case Black:
+			{
+				return Black
+			}
+		default:
+			{
+				// continue - it's transparent
+			}
+		}
+	}
+	return Transparent
+}
+
+func ExtractImageLayerInfo(image *ImageDefinition) *ImageLayersInfo {
+	pixelCount := len(image.StringData)
+	layerPixelCount := image.Width * image.Height
+	layerCount := pixelCount / layerPixelCount
+
+	return &ImageLayersInfo{
+		PixelCount:      pixelCount,
+		LayerPixelCount: layerPixelCount,
+		LayerCount:      layerCount,
+	}
+}
+
+func FreqCountValueAtLayer(imageDefinition *ImageDefinition, layerIndex int, valueToFind int) int {
 	var count int = 0
 
+	layerPixelCount := imageDefinition.Width * imageDefinition.Height
 	startPixelIndex := layerIndex * layerPixelCount
 	endPixelIndex := startPixelIndex + layerPixelCount
 
@@ -34,18 +108,15 @@ func FreqCountValueAtLayer(imageDefinition *ImageDefinition, layerIndex int, lay
 }
 
 func DecodeImageString(imageDefinition *ImageDefinition) {
-	pixelCount := len(imageDefinition.StringData)
-	layerPixelCount := imageDefinition.Width * imageDefinition.Height
-	layerCount := pixelCount / layerPixelCount
-	fmt.Println("pixelCount:", pixelCount)
-	fmt.Println("layerPixelCount:", layerPixelCount)
-	fmt.Println("layerCount", layerCount)
+	imageLayerInfo := ExtractImageLayerInfo(imageDefinition)
+	fmt.Println("pixelCount:", imageLayerInfo.PixelCount)
+	fmt.Println("layerPixelCount:", imageLayerInfo.LayerPixelCount)
+	fmt.Println("layerCount", imageLayerInfo.LayerCount)
 
 	layerInfo := []LayerInfo{}
 
-	for layerIndex := 0; layerIndex < layerCount; layerIndex++ {
-
-		zeroCount := FreqCountValueAtLayer(imageDefinition, layerIndex, layerPixelCount, 0)
+	for layerIndex := 0; layerIndex < imageLayerInfo.LayerCount; layerIndex++ {
+		zeroCount := FreqCountValueAtLayer(imageDefinition, layerIndex, 0)
 
 		item := LayerInfo{
 			LayerIndex: layerIndex,
@@ -61,8 +132,8 @@ func DecodeImageString(imageDefinition *ImageDefinition) {
 		}
 	}
 
-	oneDigits := FreqCountValueAtLayer(imageDefinition, minZeroLayer.LayerIndex, layerPixelCount, 1)
-	twoDigits := FreqCountValueAtLayer(imageDefinition, minZeroLayer.LayerIndex, layerPixelCount, 2)
+	oneDigits := FreqCountValueAtLayer(imageDefinition, minZeroLayer.LayerIndex, 1)
+	twoDigits := FreqCountValueAtLayer(imageDefinition, minZeroLayer.LayerIndex, 2)
 
 	fmt.Println(oneDigits * twoDigits)
 }
