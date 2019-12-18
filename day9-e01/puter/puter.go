@@ -23,10 +23,11 @@ const (
 func writeValue(programArray []int, relativeBase int, programCounter int, argumentIndex int, value int) {
 	instruction := programArray[programCounter]
 
-	thousands := int(math.Floor(float64(instruction / 1000 % 1000)))
+	tenThousands := int(math.Floor(float64(instruction / 10000 % 10000)))
+	thousands := int(math.Floor(float64((instruction - tenThousands*10000) / 1000 % 1000)))
 	hundreds := int(math.Floor(float64((instruction - thousands*1000) / 100 % 100)))
 
-	relativeMode := hundreds == 2
+	relativeMode := ((argumentIndex == 0) && (hundreds == 2)) || ((argumentIndex == 1) && (thousands == 2)) || ((argumentIndex == 2) && (tenThousands == 2))
 
 	if relativeMode {
 		resultIndex := programArray[programCounter+argumentIndex+1]
@@ -41,7 +42,8 @@ func writeValue(programArray []int, relativeBase int, programCounter int, argume
 func operand(programArray []int, relativeBase int, programCounter int, operandNumber int) int {
 	instruction := programArray[programCounter]
 
-	thousands := int(math.Floor(float64(instruction / 1000 % 1000)))
+	tenThousands := int(math.Floor(float64(instruction / 10000 % 10000)))
+	thousands := int(math.Floor(float64((instruction - tenThousands*10000) / 1000 % 1000)))
 	hundreds := int(math.Floor(float64((instruction - thousands*1000) / 100 % 100)))
 
 	immediateMode := ((operandNumber == 0) && (hundreds == 1)) || ((operandNumber == 1) && (thousands == 1))
@@ -74,7 +76,7 @@ func parseProgram(program string) []int {
 		programArray = append(programArray, j)
 	}
 
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 1000; i++ {
 		programArray = append(programArray, 0)
 	}
 
@@ -168,7 +170,6 @@ func MyPuter(inputStrategy InputStrategy, outputStrategy OutputStrategy, program
 				i += 3
 			}
 		case RelativeBaseAdjust:
-
 			{
 				parameter := operand(programArray, relativeBase, i, 0)
 				relativeBase += parameter
@@ -185,7 +186,6 @@ func MyPuter(inputStrategy InputStrategy, outputStrategy OutputStrategy, program
 				return programArray
 			}
 		}
-		// fmt.Println(programArray)
 	}
 	return programArray
 }

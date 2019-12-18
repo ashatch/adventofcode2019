@@ -121,16 +121,68 @@ func TestLargeNumberOutput(t *testing.T) {
 For example, if the relative base is 2000, then after the instruction 109,19, the relative base would be 2019. If the next instruction were 204,-34, then the value at address 1985 would be output.
 */
 
-// func TestRelativeModeProgram(t *testing.T) {
-// 	inputData := []int{
-// 		110,
-// 	}
+func TestRelativeModeProgram(t *testing.T) {
+	inputData := []int{}
 
-// 	input := NewSuppliedInput(inputData)
-// 	output := NewStoredOutput()
-// 	program := "9,2000,109,19"
-// 	MyPuter(input, output, program)
-// }
+	input := NewSuppliedInput(inputData)
+
+	programs := []string{
+		"2101,3,1,7,4,7,99,0",
+		"2102,3,1,7,4,7,99,0",
+
+		"109,2,2101,3,1,9,4,9,99,0",
+		"109,2,2102,3,1,9,4,9,99,0",
+
+		"109,2,1201,2,3,9,4,9,99,0",
+		"109,2,1202,2,3,9,4,9,99,0",
+
+		"109,2,1201,2,3,9,204,7,99,0",
+		"109,2,1202,2,3,9,204,7,99,0",
+	}
+
+	outputs := []int{
+		6,
+		9,
+		6,
+		9,
+		6,
+		9,
+		6,
+		9,
+	}
+
+	for i := 0; i < len(programs); i++ {
+		output := NewStoredOutput()
+		MyPuter(input, output, programs[i])
+		assert.Equal(t, outputs[i], output.Output[0])
+	}
+}
+
+func TestRelativeModeInput(t *testing.T) {
+	inputData := []int{
+		42,
+	}
+
+	input := NewSuppliedInput(inputData)
+	output := NewStoredOutput()
+
+	program := "109,6,203,1,4,7,99,0"
+
+	MyPuter(input, output, program)
+
+	assert.Equal(t, 42, output.Output[0])
+}
+
+func TestRelativeAndAbsoluteWithAddition(t *testing.T) {
+	inputData := []int{}
+
+	input := NewSuppliedInput(inputData)
+	output := NewStoredOutput()
+	program := "109,8,21102,100,100,1,4,9,99,0"
+	MyPuter(input, output, program)
+
+	assert.Equal(t, 10000, output.Output[0])
+}
 
 func TestRelativeModeQuine(t *testing.T) {
 	inputData := []int{
