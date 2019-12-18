@@ -11,7 +11,7 @@ const (
 	AddInstruction      = 1
 	MultiplyInstruction = 2
 	InputInstruction    = 3
-	PrintInstruction    = 4
+	OutputInstruction   = 4
 	JumpIfTrue          = 5
 	JumpIfFalse         = 6
 	LessThan            = 7
@@ -19,6 +19,24 @@ const (
 	RelativeBaseAdjust  = 9
 	HaltInstruction     = 99
 )
+
+func writeValue(programArray []int, relativeBase int, programCounter int, argumentIndex int, value int) {
+	instruction := programArray[programCounter]
+
+	thousands := int(math.Floor(float64(instruction / 1000 % 1000)))
+	hundreds := int(math.Floor(float64((instruction - thousands*1000) / 100 % 100)))
+
+	relativeMode := hundreds == 2
+
+	if relativeMode {
+		resultIndex := programArray[programCounter+argumentIndex+1]
+		offset := relativeBase + resultIndex
+		programArray[offset] = value
+	} else {
+		resultIndex := programArray[programCounter+argumentIndex+1]
+		programArray[resultIndex] = value
+	}
+}
 
 func operand(programArray []int, relativeBase int, programCounter int, operandNumber int) int {
 	instruction := programArray[programCounter]
@@ -35,7 +53,8 @@ func operand(programArray []int, relativeBase int, programCounter int, operandNu
 	relativeMode := ((operandNumber == 0) && (hundreds == 2)) || ((operandNumber == 1) && (thousands == 2))
 
 	if relativeMode {
-		offset := relativeBase + programArray[programCounter+operandNumber+1]
+		arg := programArray[programCounter+operandNumber+1]
+		offset := relativeBase + arg
 		return programArray[offset]
 	}
 
@@ -63,9 +82,9 @@ func parseProgram(program string) []int {
 }
 
 /*
-does the thing
+MyPuter does the thing
 */
-func MyPuter(inputStrategy InputStrategy, program string) []int {
+func MyPuter(inputStrategy InputStrategy, outputStrategy OutputStrategy, program string) []int {
 	var programArray = parseProgram(program)
 	var relativeBase int
 
@@ -81,8 +100,7 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 				lhs := operand(programArray, relativeBase, i, 0)
 				rhs := operand(programArray, relativeBase, i, 1)
 				value := lhs + rhs
-				resultIndex := programArray[i+3]
-				programArray[resultIndex] = value
+				writeValue(programArray, relativeBase, i, 2, value)
 				i += 3
 			}
 		case MultiplyInstruction:
@@ -90,30 +108,20 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 				lhs := operand(programArray, relativeBase, i, 0)
 				rhs := operand(programArray, relativeBase, i, 1)
 				value := lhs * rhs
-				resultIndex := programArray[i+3]
-				programArray[resultIndex] = value
+				writeValue(programArray, relativeBase, i, 2, value)
 				i += 3
 			}
 		case InputInstruction:
 			{
-				input, err := strconv.Atoi(inputStrategy.GetInput())
-				if err == nil {
-					argument := programArray[i+1]
-					programArray[argument] = input
-				} else {
-					fmt.Println("fault - supplied non-integer data")
-				}
+				value := inputStrategy.GetInput()
+				writeValue(programArray, relativeBase, i, 0, value)
 				i++
 			}
-		case PrintInstruction:
+		case OutputInstruction:
 			{
 				operand := operand(programArray, relativeBase, i, 0)
-				fmt.Println(operand)
+				outputStrategy.SendOutput(operand)
 				i++
-			}
-		case HaltInstruction:
-			{
-				return programArray
 			}
 		case JumpIfTrue:
 			{
@@ -139,12 +147,11 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 			{
 				a := operand(programArray, relativeBase, i, 0)
 				b := operand(programArray, relativeBase, i, 1)
-				location := programArray[i+3]
 
 				if a < b {
-					programArray[location] = 1
+					writeValue(programArray, relativeBase, i, 2, 1)
 				} else {
-					programArray[location] = 0
+					writeValue(programArray, relativeBase, i, 2, 0)
 				}
 				i += 3
 			}
@@ -152,19 +159,25 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 			{
 				a := operand(programArray, relativeBase, i, 0)
 				b := operand(programArray, relativeBase, i, 1)
-				location := programArray[i+3]
+
 				if a == b {
-					programArray[location] = 1
+					writeValue(programArray, relativeBase, i, 2, 1)
 				} else {
-					programArray[location] = 0
+					writeValue(programArray, relativeBase, i, 2, 0)
 				}
 				i += 3
 			}
 		case RelativeBaseAdjust:
+
 			{
 				parameter := operand(programArray, relativeBase, i, 0)
-				relativeBase = parameter
+				relativeBase += parameter
 				i++
+			}
+		case HaltInstruction:
+			{
+				inputStrategy.Close()
+				return programArray
 			}
 		default:
 			{
@@ -172,6 +185,7 @@ func MyPuter(inputStrategy InputStrategy, program string) []int {
 				return programArray
 			}
 		}
+		// fmt.Println(programArray)
 	}
 	return programArray
 }

@@ -19,5 +19,6 @@ func main() {
 	scanner.Scan()
 
 	stdinInput := puter.NewStdinInput()
-	puter.MyPuter(stdinInput, scanner.Text())
+	stdout := puter.NewStdoutOutput()
+	puter.MyPuter(stdinInput, stdout, scanner.Text())
 }

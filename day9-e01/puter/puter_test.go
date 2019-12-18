@@ -1,100 +1,148 @@
 package puter
 
 import (
+	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestPuterWithGivenExamples(t *testing.T) {
-	inputs := []string{
-		"1,9,10,3,2,3,11,0,99,30,40,50",
-		"1,0,0,0,99",
-		"1,1,1,4,99,5,6,0,99",
-	}
-
-	expectedOutputAtIndexZero := []int{
-		3500,
-		2,
-		30,
-	}
-
-	for i := 0; i < len(inputs); i++ {
-		programArray := MyPuter(nil, inputs[i])
-		if programArray[0] != expectedOutputAtIndexZero[i] {
-			t.Fail()
-		}
-	}
-}
-
 func TestInputOpcode(t *testing.T) {
-	inputData := []string{
-		"42",
+	inputData := []int{
+		42,
 	}
 
 	input := NewSuppliedInput(inputData)
-	programArray := MyPuter(input, "3,3,99,0")
+	programArray := MyPuter(input, nil, "3,3,99,0")
 	if programArray[3] != 42 {
 		t.Fail()
 	}
 }
 
 func TestParameterMode(t *testing.T) {
-	programArray := MyPuter(nil, "1002,4,3,4,33")
+	inputData := []int{}
+
+	input := NewSuppliedInput(inputData)
+	programArray := MyPuter(input, nil, "1002,4,3,4,33")
 	if programArray[4] != 99 {
 		t.Fail()
 	}
 }
 
 func TestParameterModeNegative(t *testing.T) {
-	programArray := MyPuter(nil, "1101,100,-1,4,0")
+	inputData := []int{}
+
+	input := NewSuppliedInput(inputData)
+	programArray := MyPuter(input, nil, "1101,100,-1,4,0")
 	if programArray[4] != 99 {
 		t.Fail()
 	}
 }
 
 func TestParameterModePrint(t *testing.T) {
-	MyPuter(nil, "4,2,4,3,99")
+	inputData := []int{}
+
+	input := NewSuppliedInput(inputData)
+	output := NewStoredOutput()
+	MyPuter(input, output, "4,2,4,3,99")
 }
 
 func TestParameterModePrintImmediate(t *testing.T) {
-	MyPuter(nil, "104,2,4,3,99")
+	inputData := []int{}
+
+	input := NewSuppliedInput(inputData)
+	output := NewStoredOutput()
+	MyPuter(input, output, "104,2,4,3,99")
+	fmt.Println(output.Output)
 }
 
 func TestEqual(t *testing.T) {
-	inputData := []string{
-		"42",
+	inputData := []int{
+		42,
 	}
 
 	input := NewSuppliedInput(inputData)
-	MyPuter(input, "3,9,8,9,10,9,4,9,99,-1,8")
+	output := NewStoredOutput()
+
+	MyPuter(input, output, "3,9,8,9,10,9,4,9,99,-1,8")
+
+	assert.Equal(t, 0, output.Output[0])
 }
 
 func TestLessThan(t *testing.T) {
-	inputData := []string{
-		"42",
+	inputData := []int{
+		42,
 	}
 
 	input := NewSuppliedInput(inputData)
-	MyPuter(input, "3,9,7,9,10,9,4,9,99,-1,8")
+	output := NewStoredOutput()
+
+	MyPuter(input, output, "3,9,7,9,10,9,4,9,99,-1,8")
+
+	assert.Equal(t, 0, output.Output[0])
 }
 func TestInputPosition(t *testing.T) {
-	inputData := []string{
-		"40",
+	inputData := []int{
+		40,
 	}
 
 	input := NewSuppliedInput(inputData)
-	MyPuter(input, "3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9")
+	output := NewStoredOutput()
+	MyPuter(input, output, "3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9")
+
+	assert.Equal(t, 1, output.Output[0])
 }
 
 func TestBigTestyTesty(t *testing.T) {
-	inputData := []string{
-		"110",
+	inputData := []int{
+		110,
 	}
 
 	input := NewSuppliedInput(inputData)
-	MyPuter(input, "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99")
+	output := NewStoredOutput()
+	MyPuter(input, output, "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99")
+
+	assert.Equal(t, 1001, output.Output[0])
 }
 
-func TestRelativeMode(t *testing.T) {
+func TestLargeNumberOutput(t *testing.T) {
+	inputData := []int{
+		110,
+	}
+
+	input := NewSuppliedInput(inputData)
+	output := NewStoredOutput()
+	program := "104,1125899906842624,99"
+	MyPuter(input, output, program)
+	assert.Equal(t, 1125899906842624, output.Output[0])
+}
+
+/*
+For example, if the relative base is 2000, then after the instruction 109,19, the relative base would be 2019. If the next instruction were 204,-34, then the value at address 1985 would be output.
+*/
+
+// func TestRelativeModeProgram(t *testing.T) {
+// 	inputData := []int{
+// 		110,
+// 	}
+
+// 	input := NewSuppliedInput(inputData)
+// 	output := NewStoredOutput()
+// 	program := "9,2000,109,19"
+// 	MyPuter(input, output, program)
+// }
+
+func TestRelativeModeQuine(t *testing.T) {
+	inputData := []int{
+		110,
+	}
+
+	input := NewSuppliedInput(inputData)
+	output := NewStoredOutput()
 	program := "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99"
-	MyPuter(nil, program)
+	MyPuter(input, output, program)
+	programAsInts := []int{
+		109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99,
+	}
+	assert.Equal(t, programAsInts, output.Output)
 }
