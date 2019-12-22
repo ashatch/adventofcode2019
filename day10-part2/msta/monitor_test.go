@@ -1,6 +1,7 @@
 package msta
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/ashatch/vector"
@@ -139,23 +140,23 @@ func TestFindDetectorSite(t *testing.T) {
 	assert.Equal(t, expectedPosition, site.Position)
 }
 
-// func TestCellsOrderedByRotationFromPos(t *testing.T) {
-// 	asteroidMapData := []string{
-// 		".#....#####...#..",
-// 		"##...##.#####..##",
-// 		"##...#...#.#####.",
-// 		"..#.....#...###..",
-// 		"..#.#.....#....##",
-// 	}
+func TestCellsOrderedByRotationFromPos(t *testing.T) {
+	asteroidMapData := []string{
+		".#....#####...#..",
+		"##...##.#####..##",
+		"##...#...#.#####.",
+		"..#.....#...###..",
+		"..#.#.....#....##",
+	}
 
-// 	asteroidMap := ParseAsteroidMap(asteroidMapData)
-// 	laserPosition := &MapCell{
-// 		Position: vector.NewVector2f(8.0, 3.0),
-// 	}
+	asteroidMap := ParseAsteroidMap(asteroidMapData)
+	laserPosition := &MapCell{
+		Position: vector.NewVector2f(8.0, 3.0),
+	}
 
-// 	cells := CellsOrderedByRotationFromPos(asteroidMap, laserPosition)
+	cells := CellsOrderedByRotationFromPos(asteroidMap, laserPosition)
 
-// 	// fmt.Println("zapping")
-// 	// Zap(laserPosition, asteroidMap, cells)
+	fmt.Println("zapping")
+	Zap(laserPosition, asteroidMap, cells)
 
-// }
+}

@@ -53,17 +53,21 @@ func CellsOrderedByRotationFromPos(asteroidMap *AsteroidMap, position *MapCell) 
 }
 
 func Zap(from *MapCell, asteroidMap *AsteroidMap, asteroids []*MapCellTarget) {
-	targetZapCount := len(asteroids)
+	targetZapCount := len(asteroids) - 1
+	var zapCount = 0
 	var searchIndex = 0
-	for targetZapCount != searchIndex {
-		if asteroids[searchIndex].Cell.Destroyed && CanSee(from, asteroids[searchIndex].Cell, asteroidMap) {
-			fmt.Println("Zap", asteroids[searchIndex].Cell.Position)
+	for zapCount < targetZapCount {
+		if !asteroids[searchIndex].Cell.Destroyed && CanSee(from, asteroids[searchIndex].Cell, asteroidMap) {
+			fmt.Println("Zap", zapCount, targetZapCount, asteroids[searchIndex].Cell.Position)
 			asteroids[searchIndex].Cell.Destroyed = true
+			zapCount++
+			for asteroids[searchIndex+1].Degrees == asteroids[searchIndex].Degrees {
+				searchIndex++
+			}
 		}
 		searchIndex++
-		searchIndex = searchIndex % len(asteroids)
+		searchIndex = searchIndex % (len(asteroids) - 1)
 	}
-
 }
 
 func MapCellsWithAsteroids(asteroidMap *AsteroidMap) []*MapCell {

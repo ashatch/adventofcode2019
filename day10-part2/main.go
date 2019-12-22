@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-
 	"./msta"
+	"github.com/ashatch/vector"
 )
 
 func main() {
@@ -43,8 +42,16 @@ func main() {
 		".........###.#.....#..##..#.##...",
 	}
 
-	asteroidMap := msta.ParseAsteroidMap(asteroidMapData)
-	site := msta.FindDetectorSite(asteroidMap)
+	//&{27 19} can see 314 <<< this is the best vantage point (part 1)
 
-	fmt.Println(site.Position, "can see", site.CanSeeCount)
+	asteroidMap := msta.ParseAsteroidMap(asteroidMapData)
+
+	laserPosition := &msta.MapCell{
+		Position: vector.NewVector2f(27, 19),
+	}
+
+	cells := msta.CellsOrderedByRotationFromPos(asteroidMap, laserPosition)
+	msta.Zap(laserPosition, asteroidMap, cells)
+	// answer is: found on this line of output: Zap 199 387 &{15 13}
+	// 1513
 }
